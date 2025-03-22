@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Web Page</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Header section -->
+    <header>
+        <h1>My Web Page</h1>
+    </header>
+
+    <!-- Navigation section -->
+    <nav>
+        <ul>
+            <li><a href="#home">Home</a></li>
+            <li><a href="#about">About</a></li>
+            <li><a href="#contact">Contact</a></li>
+        </ul>
+    </nav>
+
+    <!-- Main content section -->
+    <main>
+        <section id="home">
+            <h2>Welcome to My Web Page</h2>
+            <p>This is the home section of the web page.</p>
+        </section>
+        <section id="about">
+            <h2>About</h2>
+            <p>This section contains information about the web page.</p>
+        </section>
+    </main>
+
+    <!-- External image from pexels.com -->
+    <section>
+        <h2>External Image from Pexels</h2>
+        <img src="https://images.pexels.com/photos/414612/pexels-photo-414612.jpeg" alt="Beautiful Landscape" width="600">
+    </section>
+
+    <!-- Table of 5 contacts -->
+    <section>
+        <h2>Contacts</h2>
+        <table>
+            <tr>
+                <th>Name</th>
+                <th>Address</th>
+                <th>Mobile</th>
+                <th>Email</th>
+            </tr>
+            <tr>
+                <td>Johnson Derrick</td>
+                <td>13-50313 Kiritu</td>
+                <td>0718110207</td>
+                <td>johnsond@gmail.com</td>
+            </tr>
+            <tr>
+                <td>Janet Smoother</td>
+                <td>456-40600 Siaya</td>
+                <td>0734005678</td>
+                <td>janets@gmail.com</td>
+            </tr>
+            <tr>
+                <td>Bobson Johnson</td>
+                <td>789-00100 Nairobi</td>
+                <td>07778765</td>
+                <td>bobj@gmail.com</td>
+            </tr>
+            <tr>
+                <td>Alison Booker</td>
+                <td>321-40623 Bondo</td>
+                <td>0708064321</td>
+                <td>alisonb@gmail.com</td>
+            </tr>
+            <tr>
+                <td>Charles Davidson</td>
+                <td>654-00200 Eldoret</td>
+                <td>074356789</td>
+                <td>charlesd@gmail.com</td>
+            </tr>
+        </table>
+    </section>
+
+    <!-- Registration form -->
+    <section>
+        <h2>Registration Form</h2>
+        <form>
+            <!-- Name field -->
+            <label for="name">Name:</label>
+            <input type="text" id="name" name="name" placeholder="Enter your name" required><br><br>
+
+            <!-- Email field -->
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" placeholder="Enter your email" required><br><br>
+
+            <!-- Password field -->
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" placeholder="Enter your password" required><br><br>
+
+            <!-- Date field -->
+            <label for="dob">Date of Birth:</label>
+            <input type="date" id="dob" name="dob" required><br><br>
+
+            <!-- Dropdown field -->
+            <label for="country">Country:</label>
+            <select id="country" name="country" required>
+                <option value="">Select your country</option>
+                <option value="Kenya">Kenya</option>
+                <option value="Malawi">Malawi</option>
+                <option value="Uganda">Uganda</option>
+                <option value="Burundi">Burundi</option>
+                <option value="Tanzania">Tanzania</option>
+                <option value="South Africa">South Africa</option>
+            </select><br><br>
+
+            <!-- Radio buttons -->
+            <label>Gender:</label>
+            <input type="radio" id="male" name="gender" value="male" required>
+            <label for="male">Male</label>
+            <input type="radio" id="female" name="gender" value="female" required>
+            <label for="female">Female</label><br><br>
+
+            <!-- Checkboxes -->
+            <label>Interests:</label>
+            <input type="checkbox" id="sports" name="interests" value="sports">
+            <label for="sports">Sports</label>
+            <input type="checkbox" id="music" name="interests" value="music">
+            <label for="music">Music</label>
+            <input type="checkbox" id="reading" name="interests" value="reading">
+            <label for="reading">Reading</label><br><br>
+
+            <!-- Submit button -->
+            <input type="submit" value="Register">
+        </form>
+    </section>
+
+    <!-- Footer section -->
+    <footer>
+        <p>Contact information: <a href="mailto:alwende8@gmail.com">alwende8@gmail.com</a></p>
+    </footer>
+</body>
+</html>
