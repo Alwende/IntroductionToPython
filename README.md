@@ -25,109 +25,141 @@ To run this project, you need to have Python installed on your system. You also 
 
 ```sh
 pip install pandas numpy scikit-learn matplotlib seaborn
+```
 
-### Section 3: Usage and Step-by-Step Implementation
+## Improvements to the Network Anomaly Detection Script
 
-```markdown
-## Usage
-1. **Clone the repository:**
-   ```sh
-   git clone https://github.com/YOUR_USERNAME/YOUR_REPOSITORY.git
-   cd YOUR_REPOSITORY
-### Section 3: Usage and Step-by-Step Implementation
+The code has been improved in several ways to make it more robust, maintainable, and professional. Here are the key modifications and enhancements:
 
-```markdown
-## Usage
-1. **Clone the repository:**
-   ```sh
-   git clone https://github.com/YOUR_USERNAME/YOUR_REPOSITORY.git
-   cd YOUR_REPOSITORY
-   python network_anomaly_detection.py
-   Step-by-Step Implementation
-Step 1: Data Collection
-Load the dataset from a publicly available source. For this example, we use the KDD Cup 1999 dataset.
+### 1. **Logging:**
+   - Added logging to track the execution of the script and any potential issues.
+   - Configured logging to display timestamps, log levels, and messages.
+
+### 2. **Error Handling:**
+   - Implemented error handling using try-except blocks to manage potential issues gracefully.
+   - Logged error messages and exited the script if an exception occurs.
+
+### 3. **Modularization:**
+   - Broke down the code into functions to improve readability and maintainability.
+   - Created separate functions for loading data, preprocessing data, training the model, detecting anomalies, and visualizing anomalies.
+
+### 4. **Configuration:**
+   - Used a configuration section to define the dataset URL and column names.
+   - Made it easier to modify the configuration without changing the core logic.
+
+### 5. **Data Preprocessing:**
+   - Encoded categorical features and normalized the data to make it suitable for machine learning.
+
+### 6. **Model Training:**
+   - Trained the Isolation Forest model for anomaly detection.
+   - Configured the contamination rate and random state for reproducibility.
+
+### 7. **Anomaly Detection:**
+   - Used the trained model to detect anomalies in the network traffic data.
+   - Added the anomaly labels to the data and filtered the anomalies.
+
+### 8. **Visualization:**
+   - Visualized the network traffic and detected anomalies using a scatter plot.
+   - Configured the plot with titles, labels, and legends for better readability.
+
+### Summary of the Improved Code
+
+```python
 import pandas as pd
-
-# Load the dataset
-url = "http://kdd.ics.uci.edu/databases/kddcup99/kddcup.data_10_percent.gz"
-columns = ["duration", "protocol_type", "service", "flag", "src_bytes", "dst_bytes", "land", "wrong_fragment", "urgent",
-           "hot", "num_failed_logins", "logged_in", "num_compromised", "root_shell", "su_attempted", "num_root",
-           "num_file_creations", "num_shells", "num_access_files", "num_outbound_cmds", "is_host_login", "is_guest_login",
-           "count", "srv_count", "serror_rate", "srv_serror_rate", "rerror_rate", "srv_rerror_rate", "same_srv_rate",
-           "diff_srv_rate", "srv_diff_host_rate", "dst_host_count", "dst_host_srv_count", "dst_host_same_srv_rate",
-           "dst_host_diff_srv_rate", "dst_host_same_src_port_rate", "dst_host_srv_diff_host_rate", "dst_host_serror_rate",
-           "dst_host_srv_serror_rate", "dst_host_rerror_rate", "dst_host_srv_rerror_rate", "label"]
-
-data = pd.read_csv(url, names=columns)
-print("Data loaded successfully.")
-print(data.head())
-
-### Section 4: Data Preprocessing and Feature Engineering
-
-```markdown
-### Step 2: Data Preprocessing
-Encode categorical features and normalize the data.
-
-```python
+import numpy as np
 from sklearn.preprocessing import LabelEncoder, StandardScaler
-
-# Encode categorical features
-categorical_features = ["protocol_type", "service", "flag"]
-encoder = LabelEncoder()
-
-for feature in categorical_features:
-    data[feature] = encoder.fit_transform(data[feature])
-
-# Drop the label column for unsupervised learning
-X = data.drop(columns=["label"])
-
-# Normalize the data
-scaler = StandardScaler()
-X_scaled = scaler.fit_transform(X)
-Step 3: Feature Engineering
-Extract relevant features from the network traffic data.
-
-### Section 5: Model Training and Anomaly Detection
-
-```markdown
-### Step 4: Model Training
-Train the Isolation Forest model for anomaly detection.
-
-```python
 from sklearn.ensemble import IsolationForest
-
-# Train the Isolation Forest model
-model = IsolationForest(contamination=0.01, random_state=42)
-model.fit(X_scaled)
-print("Model trained successfully.")
-Step 5: Anomaly Detection
-Use the trained model to detect anomalies in the network traffic data.
-# Predict anomalies
-anomalies = model.predict(X_scaled)
-data["anomaly"] = anomalies
-
-# Filter the anomalies
-anomalies_data = data[data["anomaly"] == -1]
-print("Anomalies detected:")
-print(anomalies_data)
-
-### Section 6: Visualization, Conclusion, and License
-
-```markdown
-### Step 6: Visualization
-Visualize the network traffic and detected anomalies.
-
-```python
 import matplotlib.pyplot as plt
 import seaborn as sns
+import logging
+import sys
 
-# Visualize the anomalies
-plt.figure(figsize=(10, 6))
-sns.scatterplot(x="src_bytes", y="dst_bytes", hue="anomaly", data=data, palette={1: "blue", -1: "red"})
-plt.title("Network Traffic Anomalies")
-plt.xlabel("Source Bytes")
-plt.ylabel("Destination Bytes")
-plt.legend(["Normal", "Anomaly"])
-plt.show()
-Conclusion
-This project demonstrates how to use machine learning techniques to detect network anomalies and enhance network security. By leveraging machine learning, we can effectively detect and respond to network anomalies in real-time, helping to mitigate potential security threats and breaches.
+# Configure logging
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+
+def load_data(url, columns):
+    try:
+        data = pd.read_csv(url, names=columns)
+        logging.info("Data loaded successfully.")
+        return data
+    except Exception as e:
+        logging.error(f"Error loading data: {e}")
+        sys.exit(1)
+
+def preprocess_data(data, categorical_features):
+    try:
+        encoder = LabelEncoder()
+        for feature in categorical_features:
+            data[feature] = encoder.fit_transform(data[feature])
+        X = data.drop(columns=["label"])
+        scaler = StandardScaler()
+        X_scaled = scaler.fit_transform(X)
+        logging.info("Data preprocessing completed.")
+        return X_scaled, data
+    except Exception as e:
+        logging.error(f"Error preprocessing data: {e}")
+        sys.exit(1)
+
+def train_model(X_scaled, contamination=0.01):
+    try:
+        model = IsolationForest(contamination=contamination, random_state=42)
+        model.fit(X_scaled)
+        logging.info("Model trained successfully.")
+        return model
+    except Exception as e:
+        logging.error(f"Error training model: {e}")
+        sys.exit(1)
+
+def detect_anomalies(model, X_scaled, data):
+    try:
+        anomalies = model.predict(X_scaled)
+        data["anomaly"] = anomalies
+        anomalies_data = data[data["anomaly"] == -1]
+        logging.info("Anomalies detected.")
+        return anomalies_data
+    except Exception as e:
+        logging.error(f"Error detecting anomalies: {e}")
+        sys.exit(1)
+
+def visualize_anomalies(data):
+    try:
+        plt.figure(figsize=(10, 6))
+        sns.scatterplot(x="src_bytes", y="dst_bytes", hue="anomaly", data=data, palette={1: "blue", -1: "red"})
+        plt.title("Network Traffic Anomalies")
+        plt.xlabel("Source Bytes")
+        plt.ylabel("Destination Bytes")
+        plt.legend(["Normal", "Anomaly"])
+        plt.show()
+        logging.info("Anomalies visualized.")
+    except Exception as e:
+        logging.error(f"Error visualizing anomalies: {e}")
+        sys.exit(1)
+
+if __name__ == "__main__":
+    # Configuration
+    url = "http://kdd.ics.uci.edu/databases/kddcup99/kddcup.data_10_percent.gz"
+    columns = ["duration", "protocol_type", "service", "flag", "src_bytes", "dst_bytes", "land", "wrong_fragment", "urgent",
+               "hot", "num_failed_logins", "logged_in", "num_compromised", "root_shell", "su_attempted", "num_root",
+               "num_file_creations", "num_shells", "num_access_files", "num_outbound_cmds", "is_host_login", "is_guest_login",
+               "count", "srv_count", "serror_rate", "srv_serror_rate", "rerror_rate", "srv_rerror_rate", "same_srv_rate",
+               "diff_srv_rate", "srv_diff_host_rate", "dst_host_count", "dst_host_srv_count", "dst_host_same_srv_rate",
+               "dst_host_diff_srv_rate", "dst_host_same_src_port_rate", "dst_host_srv_diff_host_rate", "dst_host_serror_rate",
+               "dst_host_srv_serror_rate", "dst_host_rerror_rate", "dst_host_srv_rerror_rate", "label"]
+    categorical_features = ["protocol_type", "service", "flag"]
+
+    # Load and preprocess data
+    data = load_data(url, columns)
+    X_scaled, data = preprocess_data(data, categorical_features)
+
+    # Train model
+    model = train_model(X_scaled)
+
+    # Detect anomalies
+    anomalies_data = detect_anomalies(model, X_scaled, data)
+    print("Anomalies detected:")
+    print(anomalies_data)
+
+    # Visualize anomalies
+    visualize_anomalies(data)
+```
+These improvements make the code more robust, maintainable, and professional, which is important when sharing it with potential employers for cybersecurity roles.
