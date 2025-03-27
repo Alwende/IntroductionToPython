@@ -1,0 +1,54 @@
+import pandas as pd
+import logging
+
+# Configure logging
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+
+def generate_report(data, output_file='report.csv'):
+    """
+    Generates a detailed report from the provided data and saves it to a CSV file.
+
+    Args:
+        data (pd.DataFrame): The input data for generating the report.
+        output_file (str): The file path to save the report.
+    """
+    try:
+        logging.info("Generating report...")
+        
+        # Generate descriptive statistics
+        descriptive_stats = data.describe(include='all')
+        
+        # Add additional insights (e.g., missing values, unique counts)
+        missing_values = data.isnull().sum()
+        unique_counts = data.nunique()
+
+        # Combine all insights into a single DataFrame
+        report = pd.concat([descriptive_stats, missing_values.rename('missing_values'), unique_counts.rename('unique_counts')], axis=1)
+
+        # Save the report to a CSV file
+        report.to_csv(output_file)
+        logging.info(f"Report successfully generated and saved to {output_file}")
+    except Exception as e:
+        logging.error(f"Failed to generate report: {e}")
+
+def main():
+    """
+    Main function to load data and generate a report.
+    """
+    try:
+        # Load the dataset
+        input_file = 'access_data.csv'  # Ensure this file exists in the same directory
+        logging.info(f"Loading data from {input_file}...")
+        data = pd.read_csv(input_file)
+
+        # Generate the report
+        generate_report(data, output_file='access_report.csv')
+    except FileNotFoundError:
+        logging.error(f"File {input_file} not found. Please ensure the file exists.")
+    except pd.errors.EmptyDataError:
+        logging.error(f"File {input_file} is empty. Please provide a valid dataset.")
+    except Exception as e:
+        logging.error(f"An unexpected error occurred: {e}")
+
+if __name__ == '__main__':
+    main()

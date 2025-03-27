@@ -1,0 +1,95 @@
+import pandas as pd
+import os
+import argparse
+import logging
+
+# Configure logging
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+
+def detect_attendance_anomalies(data, threshold=2):
+    """
+    Detects attendance anomalies based on a given threshold for 'attendance_pattern'.
+
+    Args:
+        data (pd.DataFrame): DataFrame with an 'attendance_pattern' column.
+        threshold (float, optional): The threshold above which an attendance
+                                     pattern is considered an anomaly. Defaults to 2.
+
+    Returns:
+        pd.DataFrame: DataFrame containing rows where 'attendance_pattern'
+                      exceeds the specified threshold.
+    """
+    if 'attendance_pattern' not in data.columns:
+        raise ValueError("Error: The DataFrame must contain an 'attendance_pattern' column.")
+    try:
+        threshold = float(threshold)
+    except ValueError:
+        raise ValueError(f"Error: Invalid threshold value '{threshold}'. Threshold must be a number.")
+    anomalies = data[data['attendance_pattern'] > threshold]
+    return anomalies
+
+def load_attendance_data(file_path):
+    """
+    Loads attendance data from a CSV file.
+
+    Args:
+        file_path (str): The path to the CSV file.
+
+    Returns:
+        pd.DataFrame: The loaded DataFrame.
+
+    Raises:
+        FileNotFoundError: If the file at the given path does not exist.
+        pd.errors.EmptyDataError: If the file is empty.
+        pd.errors.ParserError: If the file cannot be parsed as a CSV.
+    """
+    if not os.path.exists(file_path):
+        raise FileNotFoundError(f"Error: The file '{file_path}' was not found at '{os.path.abspath(file_path)}'.")
+    try:
+        data = pd.read_csv(file_path)
+        logging.info(f"Data loaded successfully from '{file_path}'.")
+        return data
+    except pd.errors.EmptyDataError:
+        logging.warning(f"Warning: The file '{file_path}' is empty.")
+        return pd.DataFrame()
+    except pd.errors.ParserError:
+        raise pd.errors.ParserError(f"Error: Could not parse the CSV file '{file_path}'. Please ensure it's in a valid format.")
+
+def main():
+    """
+    Main function to load attendance data, detect anomalies, and print the results.
+    Allows specifying the data file path and anomaly threshold via command-line arguments.
+    """
+    parser = argparse.ArgumentParser(description="Detect attendance anomalies in a CSV file.")
+    parser.add_argument("file_path", help="Path to the CSV file containing attendance data.")
+    parser.add_argument("--threshold", type=float, default=2.0, help="Threshold for detecting attendance anomalies (default: 2.0).")
+    args = parser.parse_args()
+
+    try:
+        attendance_data = load_attendance_data(args.file_path)
+        if not attendance_data.empty:
+            anomalies = detect_attendance_anomalies(attendance_data, args.threshold)
+            if not anomalies.empty:
+                print("\nAttendance Anomalies Detected:")
+                print(anomalies)
+                logging.info(f"{len(anomalies)} anomalies detected with a threshold of {args.threshold}.")
+            else:
+                print("\nNo attendance anomalies detected based on the given threshold.")
+                logging.info(f"No anomalies detected with a threshold of {args.threshold}.")
+        else:
+            print("\nNo attendance data to analyze.")
+    except FileNotFoundError as e:
+        logging.error(str(e))
+        print(f"\nError: {e}")
+    except ValueError as e:
+        logging.error(str(e))
+        print(f"\nError: {e}")
+    except pd.errors.ParserError as e:
+        logging.error(str(e))
+        print(f"\nError: {e}")
+    except Exception as e:
+        logging.error(f"An unexpected error occurred: {e}")
+        print(f"\nAn unexpected error occurred: {e}")
+
+if __name__ == "__main__":
+    main()

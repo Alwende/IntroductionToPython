@@ -1,0 +1,51 @@
+import smtplib
+from email.mime.text import MIMEText
+import logging
+
+# Configure logging
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+
+def send_alert(email, message, smtp_server, smtp_port, username, password):
+    """
+    Sends an email alert.
+
+    Args:
+        email (str): Recipient's email address.
+        message (str): The message to send.
+        smtp_server (str): SMTP server address.
+        smtp_port (int): SMTP server port.
+        username (str): SMTP username.
+        password (str): SMTP password.
+    """
+    try:
+        # Create the email message
+        msg = MIMEText(message)
+        msg['Subject'] = 'Security Alert'
+        msg['From'] = username
+        msg['To'] = email
+
+        # Connect to the SMTP server and send the email
+        with smtplib.SMTP(smtp_server, smtp_port) as server:
+            server.starttls()  # Secure the connection
+            server.login(username, password)
+            server.send_message(msg)
+            logging.info(f"Alert sent to {email}")
+
+    except Exception as e:
+        logging.error(f"Failed to send alert to {email}: {e}")
+
+def main():
+    # Example configuration
+    smtp_server = 'smtp.company.com'
+    smtp_port = 587  # Common port for SMTP with TLS
+    username = 'security@company.com'
+    password = 'your_password'  # Replace with your actual password
+
+    # Example usage
+    recipient_email = 'admin@company.com'
+    alert_message = 'Unauthorized access attempt detected.'
+
+    send_alert(recipient_email, alert_message, smtp_server, smtp_port, username, password)
+
+if __name__ == '__main__':
+    main()

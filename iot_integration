@@ -1,0 +1,82 @@
+import requests
+import logging
+
+# Configure logging
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+
+def control_lock(action, lock_id, base_url="http://iot-device"):
+    """
+    Controls an IoT lock device by sending a command to lock or unlock.
+
+    Args:
+        action (str): The action to perform ('lock' or 'unlock').
+        lock_id (str): The ID of the IoT lock device.
+        base_url (str): The base URL of the IoT device API.
+
+    Returns:
+        dict: The response from the IoT device.
+    """
+    try:
+        url = f"{base_url}/{lock_id}/{action}"
+        logging.info(f"Sending {action} command to lock {lock_id} at {url}")
+        response = requests.post(url, timeout=10)
+
+        # Check if the request was successful
+        if response.status_code == 200:
+            logging.info(f"Successfully sent {action} command to lock {lock_id}")
+            return response.json()
+        else:
+            logging.error(f"Failed to send {action} command to lock {lock_id}: {response.status_code}")
+            return {"error": f"Failed with status code {response.status_code}"}
+    except requests.exceptions.RequestException as e:
+        logging.error(f"Error communicating with IoT device: {e}")
+        return {"error": "Communication error with IoT device"}
+
+def get_lock_status(lock_id, base_url="http://iot-device"):
+    """
+    Retrieves the status of an IoT lock device.
+
+    Args:
+        lock_id (str): The ID of the IoT lock device.
+        base_url (str): The base URL of the IoT device API.
+
+    Returns:
+        dict: The status of the IoT lock device.
+    """
+    try:
+        url = f"{base_url}/{lock_id}/status"
+        logging.info(f"Retrieving status for lock {lock_id} at {url}")
+        response = requests.get(url, timeout=10)
+
+        # Check if the request was successful
+        if response.status_code == 200:
+            logging.info(f"Successfully retrieved status for lock {lock_id}")
+            return response.json()
+        else:
+            logging.error(f"Failed to retrieve status for lock {lock_id}: {response.status_code}")
+            return {"error": f"Failed with status code {response.status_code}"}
+    except requests.exceptions.RequestException as e:
+        logging.error(f"Error communicating with IoT device: {e}")
+        return {"error": "Communication error with IoT device"}
+
+def main():
+    """
+    Main function to test IoT integration.
+    """
+    # Example usage
+    lock_id = "lock123"
+
+    # Unlock the lock
+    unlock_response = control_lock('unlock', lock_id)
+    print("Unlock Response:", unlock_response)
+
+    # Get the lock status
+    status_response = get_lock_status(lock_id)
+    print("Lock Status Response:", status_response)
+
+    # Lock the lock
+    lock_response = control_lock('lock', lock_id)
+    print("Lock Response:", lock_response)
+
+if __name__ == '__main__':
+    main()
