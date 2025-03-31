@@ -1,0 +1,116 @@
+# -*- coding: utf-8 -*-
+"""
+Analyzing Data with Pandas and Visualizing Results with Matplotlib
+
+This script performs basic data analysis and visualization on a chosen dataset.
+
+Date: March 31, 2025
+Location: Siaya, Siaya, Kenya
+"""
+
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn.datasets import load_iris
+
+# --- Task 1: Load and Explore the Dataset ---
+
+# Choose a dataset: Using the Iris dataset for this example
+try:
+    iris = load_iris(as_frame=True)
+    df = iris.frame
+    print("Dataset loaded successfully (Iris dataset).")
+except FileNotFoundError:
+    print("Error: Dataset file not found. Please check the file path.")
+    exit()
+except Exception as e:
+    print(f"An error occurred during dataset loading: {e}")
+    exit()
+
+# Display the first few rows
+print("\nFirst 5 rows of the dataset:")
+print(df.head())
+
+# Explore the structure
+print("\nDataset information:")
+df.info()
+
+print("\nMissing values:")
+print(df.isnull().sum())
+
+# Clean the dataset (for Iris dataset, there are no missing values, so this step is skipped)
+if df.isnull().sum().sum() > 0:
+    print("\nHandling missing values (if any)...")
+    # Example: Filling missing numerical values with the mean
+    for col in df.select_dtypes(include=['number']).columns:
+        df[col].fillna(df[col].mean(), inplace=True)
+    # Example: Dropping rows with any missing values
+    # df.dropna(inplace=True)
+    print("Missing values after cleaning:")
+    print(df.isnull().sum())
+else:
+    print("\nNo missing values found in the dataset.")
+
+# --- Task 2: Basic Data Analysis ---
+
+print("\n--- Basic Data Analysis ---")
+
+# Basic statistics of numerical columns
+print("\nBasic statistics of numerical columns:")
+print(df.describe())
+
+# Grouping on a categorical column (target/species) and computing the mean of numerical columns
+print("\nMean of numerical columns grouped by species:")
+grouped_data = df.groupby('target').mean()
+print(grouped_data)
+
+# Identify any patterns or interesting findings
+print("\n--- Interesting Findings ---")
+print("Based on the grouped data:")
+print("- Setosa species (target 0) tends to have the smallest sepal length, sepal width, petal length, and petal width on average.")
+print("- Virginica species (target 2) tends to have the largest sepal length, petal length, and petal width on average.")
+print("- Versicolor species (target 1) falls in between Setosa and Virginica for most of these measurements.")
+
+# --- Task 3: Data Visualization ---
+
+print("\n--- Data Visualization ---")
+sns.set_style("whitegrid") # Optional: Use seaborn for improved aesthetics
+
+# 1. Line chart (Not directly applicable to the Iris dataset in a typical time-series sense,
+#    but we can create a pseudo-line plot of a feature across the index)
+plt.figure(figsize=(10, 6))
+plt.plot(df.index, df['sepal length (cm)'], marker='o', linestyle='-', color='skyblue')
+plt.title('Trend of Sepal Length Across Data Points')
+plt.xlabel('Data Point Index')
+plt.ylabel('Sepal Length (cm)')
+plt.grid(True)
+plt.show()
+
+# 2. Bar chart (Average petal length per species)
+plt.figure(figsize=(8, 6))
+sns.barplot(x='target', y='petal length (cm)', data=df, palette='viridis')
+plt.title('Average Petal Length per Iris Species')
+plt.xlabel('Species (0: Setosa, 1: Versicolor, 2: Virginica)')
+plt.ylabel('Average Petal Length (cm)')
+plt.xticks(ticks=[0, 1, 2], labels=['Setosa', 'Versicolor', 'Virginica'])
+plt.show()
+
+# 3. Histogram (Distribution of sepal width)
+plt.figure(figsize=(8, 6))
+sns.histplot(df['sepal width (cm)'], bins=20, kde=True, color='lightcoral')
+plt.title('Distribution of Sepal Width (cm)')
+plt.xlabel('Sepal Width (cm)')
+plt.ylabel('Frequency')
+plt.show()
+
+# 4. Scatter plot (Sepal length vs. Petal length)
+plt.figure(figsize=(8, 6))
+sns.scatterplot(x='sepal length (cm)', y='petal length (cm)', hue='target', data=df, palette='plasma')
+plt.title('Sepal Length vs. Petal Length')
+plt.xlabel('Sepal Length (cm)')
+plt.ylabel('Petal Length (cm)')
+plt.legend(title='Species', labels=['Setosa', 'Versicolor', 'Virginica'])
+plt.grid(True)
+plt.show()
+
+print("\n--- End of Analysis ---")
